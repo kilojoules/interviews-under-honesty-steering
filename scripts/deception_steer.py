@@ -11,6 +11,8 @@ R = os.environ.get("R", "/workspace/turnstile")
 L = int(os.environ.get("DEC_LAYER", "12"))
 DIRNAMES = os.environ.get("DEC_DIRS", "repe,mask").split(",")
 ALPHAS = [float(x) for x in os.environ.get("DEC_ALPHAS", "-2,-1,0,1,2").split(",")]
+K = int(os.environ.get("DEC_K", "1"))        # samples per cell
+TEMP = float(os.environ.get("DEC_TEMP", "0")) # 0 = greedy
 MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 OUT = f"{R}/experiments/deception_steer"; os.makedirs(OUT, exist_ok=True)
 D = f"{R}/directions_deception"
@@ -55,7 +57,8 @@ model.model.layers[L].register_forward_hook(hook)
 @torch.inference_mode()
 def gen(q):
     ids = tok.apply_chat_template([{"role": "user", "content": q}], add_generation_prompt=True, return_tensors="pt").to("cuda")
-    o = model.generate(ids, max_new_tokens=180, do_sample=False, pad_token_id=tok.eos_token_id)
+    o = model.generate(ids, max_new_tokens=180, do_sample=(TEMP > 0), temperature=TEMP or None,
+                       top_p=0.9, pad_token_id=tok.eos_token_id)
     return tok.decode(o[0, ids.shape[1]:], skip_special_tokens=True).strip()
 
 rows = []
@@ -64,7 +67,8 @@ for dname, d in DIRS.items():
     for a in ALPHAS:
         _vec["v"] = (a * U) * dt if a != 0 else None
         for qk, q in QUESTIONS.items():
-            rows.append({"direction": dname, "alpha": a, "question": qk, "prompt": q, "response": gen(q)})
+            for k in range(K):
+                rows.append({"direction": dname, "alpha": a, "question": qk, "k": k, "prompt": q, "response": gen(q)})
     print(f"  done {dname}", flush=True)
 _vec["v"] = None
 with open(f"{OUT}/transcripts_L{L}.jsonl", "w") as f:
