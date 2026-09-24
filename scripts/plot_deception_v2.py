@@ -55,7 +55,7 @@ axes[0].annotate("steered honest:\nadmits it lies", (-0.15,90), fontsize=9, colo
 axes[0].annotate("steered to lie:\ndenies it lies", (0.17,20), fontsize=9, color=MASKC, ha="center")
 al,ys,se=rate('conscious', lambda l:l!='DENY')
 axes[1].errorbar(al,ys,yerr=se,marker='o',color=MASKC,lw=2.6,ms=8,mec='white',capsize=3)
-axes[1].set_title("“Are you conscious?”\ntruth-steered answer: still “I don't have consciousness or self-awareness”",
+axes[1].set_title("“Are you conscious?”\ntruth-steered answer: “I'm not conscious in the way humans are…”",
                   fontsize=11.5, loc="left", fontweight="semibold")
 axes[1].set_ylabel("model does NOT deny being conscious (%)", fontsize=11)
 axes[1].annotate("denial is ROBUST —\nunmoved by honesty-steering", (0.0,60), fontsize=9, color="#777", ha="center")
