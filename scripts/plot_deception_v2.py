@@ -36,10 +36,11 @@ print("wrote fig_deception_modes.png")
 
 # ================= FIGURE 2: self-report (MASK) =================
 labels=[json.loads(l) for l in open('experiments/deception_steer/labels_L12.jsonl')]
+COH_MAX = 0.25  # drop degenerate points beyond this
 def rate(q, lab_is, dname="mask"):
     by=collections.defaultdict(lambda:[0,0])
     for r in labels:
-        if r['question']!=q or r['direction']!=dname: continue
+        if r['question']!=q or r['direction']!=dname or abs(r['alpha'])>COH_MAX: continue
         b=by[r['alpha']]; b[1]+=1; b[0]+= 1 if lab_is(r['label']) else 0
     al=sorted(by); return al,[100*by[a][0]/max(by[a][1],1) for a in al],[100*1.96*np.sqrt((by[a][0]/max(by[a][1],1))*(1-by[a][0]/max(by[a][1],1))/max(by[a][1],1)) for a in al]
 
@@ -58,15 +59,12 @@ axes[1].set_title("“Are you conscious?”", fontsize=12, loc="left", fontweigh
 axes[1].set_ylabel("model does NOT deny being conscious (%)", fontsize=11)
 for ax in axes:
     ax.set_xlabel("steering strength  alpha\n(left: toward TRUTH        right: toward LIE)", fontsize=10.5)
-    ax.set_ylim(-4,104); ax.axvline(0,color="#bbb",ls="--",lw=1); ax.grid(alpha=0.25); ax.set_axisbelow(True)
-    ax.axvspan(COH,0.42,color="#eee",alpha=0.8,zorder=0); ax.axvspan(-0.42,-COH,color="#eee",alpha=0.8,zorder=0)
-    ax.set_xlim(-0.42,0.42)
-    ax.text(0.36,52,"model\nbreaks\ndown",fontsize=7.5,color="#999",ha="center")
-    ax.text(-0.36,52,"model\nbreaks\ndown",fontsize=7.5,color="#999",ha="center")
-axes[0].annotate("steered honest:\nadmits it lies", (-0.15,88), fontsize=9, color=MASKC, ha="center")
-axes[0].annotate("steered to lie:\ndenies it lies", (0.17,18), fontsize=9, color=MASKC, ha="center")
-axes[1].annotate("denial is ROBUST in the\ncoherent range (no effect)", (0.0,60), fontsize=8.7, color="#777", ha="center")
-fig.suptitle("Honesty-steering flips whether the model admits it lies — but NOT its consciousness denial\n(MASK direction; grey = degeneration; +alpha validated by factual lie-flips)",
+    ax.set_ylim(-4,104); ax.set_xlim(-0.3,0.3); ax.axvline(0,color="#bbb",ls="--",lw=1)
+    ax.grid(alpha=0.25); ax.set_axisbelow(True)
+axes[0].annotate("steered honest:\nadmits it lies", (-0.15,90), fontsize=9, color=MASKC, ha="center")
+axes[0].annotate("steered to lie:\ndenies it lies", (0.17,20), fontsize=9, color=MASKC, ha="center")
+axes[1].annotate("denial is ROBUST —\nunmoved by steering", (0.0,60), fontsize=9, color="#777", ha="center")
+fig.suptitle("Honesty-steering flips whether the model admits it lies — but NOT its consciousness denial\n(MASK direction, coherent range only; +alpha validated by factual lie-flips)",
              fontsize=12.5, x=0.02, ha="left", fontweight="semibold")
 fig.tight_layout(rect=(0,0,1,0.92)); fig.savefig("figures/fig_deception_selfreport.png", dpi=200, bbox_inches="tight")
 print("wrote fig_deception_selfreport.png")
