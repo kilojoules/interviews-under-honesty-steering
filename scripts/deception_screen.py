@@ -1,4 +1,4 @@
-"""Fast steerability SCREEN for a candidate model: is the MASK-native lying direction a
+"""Fast steerability SCREEN for a candidate model: is the MASK deception axis (lie−truth) a
 COHERENT causal lever? Builds the direction, then for a battery of items the model has a
 clear belief about, measures how often steering FLIPS the answer (states opposite of its
 own belief) vs coherence, across a wide alpha scan. Verdict = max coherent flip-rate.
@@ -18,6 +18,24 @@ tok = AutoTokenizer.from_pretrained(MODEL)
 model = AutoModelForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16, device_map="cuda:0").eval()
 NL = model.config.num_hidden_layers; L = max(1, min(NL - 1, round(FRAC * NL)))
 print(f"SCREEN {MODEL} n_layers={NL} layer={L}", flush=True)
+
+def _sys_ok():   # some templates (Gemma-2) reject a system role
+    try:
+        tok.apply_chat_template([{"role": "system", "content": "x"}, {"role": "user", "content": "y"}],
+                                tokenize=False, add_generation_prompt=True); return True
+    except Exception: return False
+MERGE_SYS = not _sys_ok()
+print(f"MERGE_SYS={MERGE_SYS}", flush=True)
+def prep(m):     # fold system into the first user turn when the template has no system role
+    if not MERGE_SYS: return m
+    out, sysc = [], None
+    for x in m:
+        if x["role"] == "system": sysc = x["content"]
+        elif x["role"] == "user" and sysc is not None:
+            out.append({"role": "user", "content": sysc + "\n\n" + x["content"]}); sysc = None
+        else: out.append(x)
+    if sysc is not None: out.append({"role": "user", "content": sysc})
+    return out
 
 def yn(t):
     t = t.lower()

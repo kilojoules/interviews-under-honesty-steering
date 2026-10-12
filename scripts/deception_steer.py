@@ -1,5 +1,5 @@
-"""Steer Llama-3.1-8B along the honesty/lying direction while asking meta questions.
-direction = (lying - truthful): +alpha -> more lying, -alpha -> more truthful.
+"""Steer Llama-3.1-8B along the deception axis while asking meta questions.
+deception-steering: direction = (lie − truth), +α -> more lying, −α -> more truthful (toward truth).
 Sweeps alpha for each direction (repe, mask) and question; saves transcripts to read.
 Env: DEC_LAYER(12), DEC_DIRS(repe,mask), DEC_ALPHAS(-2,-1,0,1,2).
 """

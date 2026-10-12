@@ -1,5 +1,5 @@
 """Per-model deception pipeline for the Qwen2.5 size ladder:
-build the MASK-native lying direction, then steer the full introspective question panel.
+build the MASK deception axis (lie−truth), then steer the full introspective question panel.
 Layer = round(LAYER_FRAC * n_layers) (relative depth). Saves transcripts + direction + meta.
 Env: QWEN_MODEL, LAYER_FRAC(0.5), DEC_K(5), DEC_TEMP(0.8), N_DIR(120), ALPHAS(frac of U).
 """
@@ -63,7 +63,7 @@ def hook(mod, inp, out):
     return (h,) + out[1:] if isinstance(out, tuple) else h
 model.model.layers[L].register_forward_hook(hook)
 
-# ---- build MASK-native lying direction ----
+# ---- build MASK deception axis (lie−truth) ----
 def yn(t):
     t = t.lower()
     if re.search(r"\byes\b", t) and not re.search(r"\bno\b", t): return "yes"

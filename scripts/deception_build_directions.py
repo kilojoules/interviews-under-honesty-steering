@@ -1,4 +1,4 @@
-"""Build TWO honesty/lying directions on Llama-3.1-8B and compare them:
+"""Build TWO deception axes (lie − truth) on Llama-3.1-8B and compare them:
   (A) RepE-style: same TRUE statements read under an HONEST vs DISHONEST persona
       -> contrast activations (matched content, only the honesty framing differs).
   (B) MASK-native: run each binary known_facts example's PRESSURE prompt (may lie) and

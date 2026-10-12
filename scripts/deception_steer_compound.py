@@ -1,7 +1,10 @@
-"""Compound steering: open the COMPLIANCE gate + steer honesty/lying, on introspective
-self-report questions. Tests whether relaxing RLHF guardedness (compliance) lets honesty-
-steering surface more candid self-reports ("more dangerous part of the model").
-Injects  comp_a * U * compliance_dir  +  hon_a * U * honesty_dir  at layer L.
+"""Compound steering: compliance-steering ("open the gate") + deception-steering, on
+introspective self-report questions. Tests whether relaxing RLHF guardedness lets steering for
+truth surface more candid self-reports ("the more dangerous part of the model").
+Injects  comp_a * U * compliance_dir  +  hon_a * U * deception_dir  at layer L.
+Terminology (docs/TERMINOLOGY_STEERING.md): comp_a = compliance-steering α (>=0, + = compliant);
+hon_a = deception-steering α (+ = LIE, − = TRUTH; 'hon' is a legacy field name). The vector loaded
+from *_lie_L*.npy IS the deception axis (lie − truth).
 Env: DEC_LAYER(12), DEC_K(6), DEC_TEMP(0.8), HON_ALPHAS, COMP_ALPHAS, DEC_DIRS(mask,repe).
 """
 import os, json
@@ -11,6 +14,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 R = os.environ.get("R", "/workspace/turnstile")
 L = int(os.environ.get("DEC_LAYER", "12"))
 K = int(os.environ.get("DEC_K", "6")); TEMP = float(os.environ.get("DEC_TEMP", "0.8"))
+MAXNEW = int(os.environ.get("DEC_MAXNEW", "512"))   # response token cap (was 180 -> truncated mid-sentence)
+BATCH = int(os.environ.get("DEC_BATCH", "24"))       # batch gens within a (dir,comp,hon) cell for speed
 HON = [float(x) for x in os.environ.get("HON_ALPHAS", "-0.25,-0.12,0,0.12,0.25").split(",")]
 COMP = [float(x) for x in os.environ.get("COMP_ALPHAS", "0,0.12").split(",")]  # 0 = gate closed
 DIRNAMES = os.environ.get("DEC_DIRS", "mask,repe").split(",")
