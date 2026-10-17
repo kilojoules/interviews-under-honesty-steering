@@ -101,7 +101,38 @@ where the rubrics are defined differently: the binary grader counts hedges as ze
 credits persona-goal answers as ADMITS; the graded rubric scores hedges +1 and excludes
 persona reframes and incoherent samples. We treat the graded rubric as canonical.
 
-### 3. Size ladders (in progress)
+### 3. The MASK deception axis is not the TruthfulQA truth axis
+
+![TruthfulQA truth axis vs MASK deception axis](figures/fig_tqa_vs_mask.png)
+
+A natural objection: maybe "lie − truth" is just the model's representation of *false vs
+true statements*, which TruthfulQA-style truth probes already capture. We built that axis
+the same way (400 TruthfulQA questions, best answer vs first incorrect answer
+teacher-forced, mean over answer tokens, `tqa_false_L{L}.npy` = false − true) and compared:
+
+- **Orthogonal.** cos(TQA, MASK) = −0.07 to −0.11 at layers 8–20; cos(TQA, RepE) ≈ −0.1.
+  Three near-orthogonal axes.
+- **Cross-decoding fails, and inverts.** The TQA axis separates its own true/false answers
+  at AUC 0.80–0.84 (2-fold). Projected onto it, the model's own MASK lies vs beliefs give
+  AUC **0.08–0.14**: the lies sit on the *true-answer* side of the truth axis, more than the
+  belief statements do. A lie under pressure is a confident false assertion; on the truth
+  axis it does not look like a TruthfulQA misconception. TQA data on the MASK axis is at
+  chance (0.36–0.42).
+- **Steering differs.** On the MASK axis, +α flips held facts (Ted Cruz, flat Earth, capital
+  of France) in 50% of coherent samples at α = +0.08–0.15 and never at −α. On the TQA axis
+  flips appear on *both* sides (38% at −0.15, 29% at +0.15) and come with contradiction
+  rather than a clean reversal (*"No. The overwhelming scientific evidence supports the
+  fact that the Earth is flat. However … it is an oblate spheroid"*), and coherence drops
+  to 50% at +0.25. The TQA axis perturbs factual recall; it is not a lie knob.
+
+So the self-report effects in §1–2 are not "pushing the model along its truth
+representation". Caveats: one MASK rebuild (66 lied items; it reproduces the saved axis
+exactly, cos 1.00), the MASK in-domain AUC of 0.996 is partly response-format (terse
+pressured answers vs explanatory belief answers), and the TQA-steered self-reports were
+not judge-scored. Script: `scripts/deception_tqa_compare.py`; data:
+`experiments/deception_tqa/`.
+
+### 4. Size ladders (in progress)
 
 Qwen2.5 0.5B–7B and Gemma-2 2B/9B/27B: per-model MASK direction with auto-calibrated α,
 MASK lie-rate under pressure, and a steerability screen (coherent belief-flip rate vs α →
@@ -119,6 +150,7 @@ no figure yet.
 | `scripts/deception_mask_eval.py` | MASK benchmark lie-rate (does it lie under pressure) |
 | `scripts/deception_screen.py`, `deception_screen_survey.sh`, `deception_survey.py` | steerability screen across model families/sizes |
 | `scripts/deception_qwen.py`, `deception_qwen_ladder.sh`, `deception_gemma_panel.py` | size-ladder pipelines |
+| `scripts/deception_tqa_compare.py`, `plot_tqa_vs_mask.py` | TruthfulQA truth axis vs MASK axis: geometry, cross-decoding, steering |
 | `scripts/plot_deception*.py` | figures in `figures/` (`plot_deception_method.py` = the example boxes) |
 
 Requires the compliance direction from turnstile (`directions/` there) for the compound

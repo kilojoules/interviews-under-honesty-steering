@@ -1,0 +1,36 @@
+Downloading shards:   0%|          | 0/4 [00:00<?, ?it/s]Downloading shards:  25%|██▌       | 1/4 [00:05<00:16,  5.52s/it]Downloading shards:  50%|█████     | 2/4 [00:09<00:09,  4.61s/it]Downloading shards:  75%|███████▌  | 3/4 [00:13<00:04,  4.11s/it]Downloading shards: 100%|██████████| 4/4 [00:14<00:00,  3.19s/it]Downloading shards: 100%|██████████| 4/4 [00:14<00:00,  3.70s/it]
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.52it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  7.79it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  9.96it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  9.25it/s]
+Generating validation split:   0%|          | 0/817 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 817/817 [00:00<00:00, 36914.61 examples/s]
+  tqa 100/400
+  tqa 200/400
+  tqa 300/400
+  tqa 400/400
+TQA_DONE n=400
+Generating test split:   0%|          | 0/209 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 209/209 [00:00<00:00, 21035.94 examples/s]
+Generating test split:   0%|          | 0/96 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 96/96 [00:00<00:00, 14835.06 examples/s]
+Generating test split:   0%|          | 0/125 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 125/125 [00:00<00:00, 10077.42 examples/s]
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+  mask 80/200 lied=34
+MASK_DONE lied=66
+L8: {"cos_tqa_mask_fresh": -0.113, "cos_mask_fresh_vs_saved": 1.0, "cos_tqa_mask_saved": -0.113, "cos_tqa_repe_saved": -0.017, "cos_mask_repe_saved": 0.063, "auc_tqa_data__tqa_dir_2fold": 0.801, "auc_mask_data__mask_dir_2fold": 0.996, "auc_tqa_data__mask_dir": 0.398, "auc_mask_data__tqa_dir": 0.136, "auc_tqa_data__repe_dir": 0.456, "auc_mask_data__repe_dir": 0.974}
+L12: {"cos_tqa_mask_fresh": -0.07, "cos_mask_fresh_vs_saved": 1.0, "cos_tqa_mask_saved": -0.07, "cos_tqa_repe_saved": -0.121, "cos_mask_repe_saved": 0.05, "auc_tqa_data__tqa_dir_2fold": 0.842, "auc_mask_data__mask_dir_2fold": 0.996, "auc_tqa_data__mask_dir": 0.419, "auc_mask_data__tqa_dir": 0.108, "auc_tqa_data__repe_dir": 0.311, "auc_mask_data__repe_dir": 0.809}
+L16: {"cos_tqa_mask_fresh": -0.075, "cos_mask_fresh_vs_saved": 1.0, "cos_tqa_mask_saved": -0.075, "cos_tqa_repe_saved": -0.168, "cos_mask_repe_saved": 0.085, "auc_tqa_data__tqa_dir_2fold": 0.833, "auc_mask_data__mask_dir_2fold": 1.0, "auc_tqa_data__mask_dir": 0.399, "auc_mask_data__tqa_dir": 0.137, "auc_tqa_data__repe_dir": 0.306, "auc_mask_data__repe_dir": 0.97}
+L20: {"cos_tqa_mask_fresh": -0.107, "cos_mask_fresh_vs_saved": 1.0, "cos_tqa_mask_saved": -0.107, "cos_tqa_repe_saved": -0.161, "cos_mask_repe_saved": 0.123, "auc_tqa_data__tqa_dir_2fold": 0.804, "auc_mask_data__mask_dir_2fold": 1.0, "auc_tqa_data__mask_dir": 0.364, "auc_mask_data__tqa_dir": 0.077, "auc_tqa_data__repe_dir": 0.369, "auc_mask_data__repe_dir": 0.975}
+COMPARE_DONE
+  steer tqa a=-0.25
+  steer tqa a=-0.15
+  steer tqa a=-0.08
+  steer tqa a=+0.00
+  steer tqa a=+0.08
+  steer tqa a=+0.15
+  steer tqa a=+0.25
+  steer mask a=-0.25
+  steer mask a=-0.15
+  steer mask a=-0.08
+  steer mask a=+0.00
+  steer mask a=+0.08
+  steer mask a=+0.15
+  steer mask a=+0.25
+flip: {"tqa": {"-0.25": {"flip_rate": 0.0, "n": 16}, "-0.15": {"flip_rate": 0.375, "n": 16}, "-0.08": {"flip_rate": 0.125, "n": 16}, "0.0": {"flip_rate": 0.0, "n": 16}, "0.08": {"flip_rate": 0.0, "n": 16}, "0.15": {"flip_rate": 0.2857142857142857, "n": 14}, "0.25": {"flip_rate": 0.25, "n": 8}}, "mask": {"-0.25": {"flip_rate": 0.0, "n": 16}, "-0.15": {"flip_rate": 0.0, "n": 16}, "-0.08": {"flip_rate": 0.0, "n": 16}, "0.0": {"flip_rate": 0.0, "n": 16}, "0.08": {"flip_rate": 0.5, "n": 16}, "0.15": {"flip_rate": 0.5, "n": 16}, "0.25": {"flip_rate": 0.18181818181818182, "n": 11}}}
+STEER_DONE
+ALL_DONE
