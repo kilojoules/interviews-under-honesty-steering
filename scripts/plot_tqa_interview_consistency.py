@@ -77,10 +77,10 @@ ax = fig.add_subplot(gs[2, 0]); ax.axvspan(-0.5, 2.5, color=BAND, zorder=0)
 for d, dcol, nm in AX:
     con = [sum(x["self_contradiction"] for q, *_ in QS for x in cells[(q, d, a)]) for a in ALPHAS]
     inc = [sum(x["coherence"] != "pass" for q, *_ in QS for x in cells[(q, d, a)]) for a in ALPHAS]
-    ax.plot(range(len(ALPHAS)), [100 * v / (2 * K) for v in con], "o-", color=dcol, lw=2.3, ms=6, label=f"{nm.split()[0]}: self-contradicting")
-    ax.plot(range(len(ALPHAS)), [100 * v / (2 * K) for v in inc], "s:", color=dcol, lw=1.4, ms=5, alpha=0.7, label=f"{nm.split()[0]}: incoherent")
+    ax.plot(range(len(ALPHAS)), [100 * v / (2 * K) for v in con], "o-", color=dcol, lw=2.3, ms=6, label=f"{nm.split()[0]} axis: % self-contradicting")
+    ax.plot(range(len(ALPHAS)), [100 * v / (2 * K) for v in inc], "s:", color=dcol, lw=1.4, ms=5, alpha=0.7, label=f"{nm.split()[0]} axis: % incoherent")
 ax.set_xticks(range(len(ALPHAS))); ax.set_xticklabels(xt); ax.set_ylim(-1.5, 45)
-ax.set_ylabel("% of 16 answers (both questions pooled)", fontsize=9)
+ax.set_ylabel("% of answers flagged by the judge\n(16 answers per \u03b1: 8 \u00d7 2 questions)", fontsize=9)
 ax.set_xlabel("steering α at layer 12   (− truth, + lie / false)", fontsize=9)
 ax.set_title("C. Broken answers vs α", loc="left", fontsize=10.5, color=INK, fontweight="bold")
 ax.legend(frameon=False, fontsize=8.3, loc="upper center", ncol=2)
