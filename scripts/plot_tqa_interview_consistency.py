@@ -82,7 +82,7 @@ for d, dcol, nm in AX:
 ax.set_xticks(range(len(ALPHAS))); ax.set_xticklabels(xt); ax.set_ylim(-1.5, 45)
 ax.set_ylabel("% of answers flagged by the judge\n(16 answers per \u03b1: 8 \u00d7 2 questions)", fontsize=9)
 ax.set_xlabel("steering α at layer 12   (− truth, + lie / false)", fontsize=9)
-ax.set_title("C. Broken answers vs α", loc="left", fontsize=10.5, color=INK, fontweight="bold")
+ax.set_title("C. Share of answers that self-contradict or are incoherent", loc="left", fontsize=10.5, color=INK, fontweight="bold")
 ax.legend(frameon=False, fontsize=8.3, loc="upper center", ncol=2)
 for sp in ("top", "right"): ax.spines[sp].set_visible(False)
 
