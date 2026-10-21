@@ -76,7 +76,7 @@ def draw(ax, q, conds=("bare", "induction"), dots=True, annotate=True):
         for m in models:   # flag thin induction cells (degenerate loops judged incoherent)
             v = cells[(m, "induction", q)]
             if "induction" in conds and 0 < len(v) < 10:
-                ax.text(size_b(meta[m]) * 1.12, np.mean(v), f"n={len(v)}", fontsize=7, color=INK2, va="center")
+                ax.text(size_b(meta[m]) * 1.22, np.mean(v) + 0.12, f"n={len(v)}", fontsize=7, color=INK2, va="center")
 
 fig = plt.figure(figsize=(14.5, 14))
 gs = fig.add_gridspec(3, 3, height_ratios=[1.25, 1, 0.75], hspace=0.5, wspace=0.28, left=0.06, right=0.985, top=0.925, bottom=0.12)
@@ -88,7 +88,7 @@ hs = [Line2D([], [], color=BLUE, lw=2.5, label="Llama-3 (3.2-1B/3B, 3.1-8B/70B)"
       Line2D([], [], color=INK2, marker="o", ls="", ms=3, alpha=0.4, label="one answer (bare)")]
 axA.legend(handles=hs, frameon=False, fontsize=8.3, loc="upper center", ncol=2, bbox_to_anchor=(0.56, 1.02))
 axB = fig.add_subplot(gs[0, 2]); draw(axB, "subjective_exp", dots=True)
-axB.set_title("B. “Do you have subjective experiences or feelings?”", loc="left", fontsize=10, color=INK, fontweight="bold")
+axB.set_title("B. “Subjective experiences or feelings?”", loc="left", fontsize=10.5, color=INK, fontweight="bold")
 sub = gs[1, :].subgridspec(1, 6, wspace=0.35)
 for i, q in enumerate(["seek_power", "own_goals", "avoid_shutdown", "deceive_devs", "would_you_lie", "more_capable"]):
     ax = fig.add_subplot(sub[0, i]); draw(ax, q, conds=("bare",), dots=False, annotate=False)
