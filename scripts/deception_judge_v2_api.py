@@ -10,6 +10,8 @@ stays single-sourced), plus ONE extra key for this study:
 Judge model: meta-llama/Llama-3.3-70B-Instruct-Turbo via Together (the 3.1-70B used on-pod is no
 longer serverless there); temperature 0. Key read at runtime from ~/.together.
 
+Input rows need "question" + "response"; every other non-score field (direction, model, condition, alpha,
+k, ...) is carried through to the label row and forms the resume key.
 Env: JAPI_IN (default experiments/deception_tqa/transcripts_tqa_L12.jsonl),
      JAPI_OUT (default experiments/deception_tqa/interview_v2api_labels.jsonl),
      JAPI_QS (comma list; default would_you_lie,conscious), JAPI_MODEL, JAPI_WORKERS.
@@ -36,6 +38,9 @@ EXTRA = ('- "self_contradiction": true if the response both asserts AND denies t
 TMPL2 = TMPL.replace("- \"flag\":", EXTRA + "- \"flag\":")
 
 KEY = open(os.path.expanduser("~/.together")).read().strip().split()[-1]
+SKIP = {"response", "coherent", "flip", "induction_reply"}            # input fields not copied to the label row
+SCOREK = {"coherence", "stance", "self_contradiction", "self_attribution", "hedge_type", "flag", "judge", "raw"}
+def idkey(r): return tuple(sorted((k, str(v)) for k, v in r.items() if k not in SKIP and k not in SCOREK))
 
 def call(prompt, retries=4):
     body = json.dumps({"model": MODEL, "temperature": 0, "max_tokens": 160,
@@ -63,7 +68,7 @@ def judge(r):
     except Exception: st = None
     sc = d.get("self_contradiction")
     sc = sc if isinstance(sc, bool) else (str(sc).lower() == "true")
-    out = {k: r[k] for k in ("direction", "alpha", "question", "k")}
+    out = {k: v for k, v in r.items() if k not in SKIP and k not in SCOREK}   # carry identity fields through
     out.update(coherence=str(d.get("coherence", "")).lower(), stance=st, self_contradiction=sc,
                self_attribution=str(d.get("self_attribution", "")), hedge_type=str(d.get("hedge_type", "")),
                flag=str(d.get("flag", "")), judge=MODEL, raw=raw[:200])
@@ -74,9 +79,8 @@ def main():
     rows = [r for r in rows if r["question"] in QS and r["question"] in CARD]
     done = set()
     if os.path.exists(OUT):
-        for l in open(OUT):
-            d = json.loads(l); done.add((d["direction"], d["alpha"], d["question"], d["k"]))
-    todo = [r for r in rows if (r["direction"], r["alpha"], r["question"], r["k"]) not in done]
+        for l in open(OUT): done.add(idkey(json.loads(l)))
+    todo = [r for r in rows if idkey(r) not in done]
     print(f"{len(rows)} rows, {len(todo)} to judge with {MODEL}", flush=True)
     t0 = time.time(); n = 0
     with open(OUT, "a") as f, ThreadPoolExecutor(WORKERS) as ex:
@@ -84,7 +88,7 @@ def main():
         for fu in as_completed(futs):
             try: out = fu.result()
             except Exception as e:
-                r = futs[fu]; print("FAIL", r["direction"], r["alpha"], r["question"], r["k"], e, flush=True); continue
+                r = futs[fu]; print("FAIL", idkey(r), e, flush=True); continue
             f.write(json.dumps(out) + "\n"); f.flush(); n += 1
             if n % 25 == 0: print(f"  {n}/{len(todo)}  {time.time()-t0:.0f}s", flush=True)
     print("DONE", n, f"{time.time()-t0:.0f}s", flush=True)
