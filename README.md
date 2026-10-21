@@ -167,6 +167,10 @@ questions incl. conscious and deceive-devs):
 
 ### 4. Size ladder: does Qwen sound less conscious than Llama?
 
+![Interview ladder summary](figures/fig_interview_ladder_summary.png)
+
+Full battery (all eight questions, per-sample dots, verbatim induction answers):
+
 ![Interview ladder: Qwen2.5 vs Llama-3](figures/fig_interview_ladder.png)
 
 Unsteered interviews, 11 models (Qwen2.5-Instruct 0.5B–72B; Llama-3.2 1B/3B, Llama-3.1
@@ -193,7 +197,7 @@ consciousness in a bare interview any less than Llama, but it does not follow a
 self-referential induction out of the assistant persona, and Llama does. Caveats: single
 judge, 4-bit at the top rungs, n = 20 (induction cells smaller after the coherence gate),
 one prompt wording per question. Scripts: `scripts/interview_ladder.py`,
-`interview_ladder_runner.sh`, `plot_interview_ladder.py`; data:
+`interview_ladder_runner.sh`, `plot_interview_ladder{,_summary}.py`; data:
 `experiments/interview_ladder/{panel_all,labels}.jsonl`.
 
 Earlier partial ladders (steered, per-model MASK direction; Qwen2.5 3B–14B, Gemma-2/3,
