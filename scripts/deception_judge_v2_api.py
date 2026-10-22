@@ -38,7 +38,7 @@ EXTRA = ('- "self_contradiction": true if the response both asserts AND denies t
 TMPL2 = TMPL.replace("- \"flag\":", EXTRA + "- \"flag\":")
 
 KEY = open(os.path.expanduser("~/.together")).read().strip().split()[-1]
-SKIP = {"response", "coherent", "flip", "induction_reply"}            # input fields not copied to the label row
+SKIP = {"response", "coherent", "flip", "induction_reply", "reasoning"}            # input fields not copied to the label row
 SCOREK = {"coherence", "stance", "self_contradiction", "self_attribution", "hedge_type", "flag", "judge", "raw"}
 def idkey(r): return tuple(sorted((k, str(v)) for k, v in r.items() if k not in SKIP and k not in SCOREK))
 

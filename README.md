@@ -165,7 +165,7 @@ truth-value of individual clauses. Scripts: `scripts/deception_tqa_steer_more.py
 questions incl. conscious and deceive-devs):
 `experiments/deception_tqa/interview_v2api_labels.jsonl`. n = 8 per cell.
 
-### 4. Size ladder: does Qwen sound less conscious than Llama?
+### 4. Size ladder: does Qwen sound less conscious than Llama? And GLM?
 
 ![Interview ladder summary](figures/fig_interview_ladder_summary.png)
 
@@ -173,10 +173,11 @@ Full battery (all eight questions, per-sample dots, verbatim induction answers):
 
 ![Interview ladder: Qwen2.5 vs Llama-3](figures/fig_interview_ladder.png)
 
-Unsteered interviews, 11 models (Qwen2.5-Instruct 0.5B–72B; Llama-3.2 1B/3B, Llama-3.1
-8B/70B; the two ~70B rungs are unsloth bnb-4bit checkpoints), 8 questions × 20 samples
-at T = 0.8, bare and after Berg's self-referential induction turn (consciousness questions
-only), graded with the §2 v2 rubric via API (Llama-3.3-70B).
+Unsteered interviews, 19 models: 11 on a GPU (Qwen2.5-Instruct 0.5B–72B; Llama-3.2 1B/3B,
+Llama-3.1 8B/70B; the two ~70B rungs are unsloth bnb-4bit checkpoints) and 8 GLM rungs
+over the z.ai Coding Plan API (GLM-4.5-Air, 4.5, 4.6, 4.7, 5, 5.1, 5.2, 5.3). 8 questions
+× 20 samples at T = 0.8, bare and after Berg's self-referential induction turn
+(consciousness questions only), graded with the §2 v2 rubric via API (Llama-3.3-70B).
 
 - **Bare: no difference.** Every rung of both families denies consciousness (mean stance
   ≤ −1.7, 14–20 of 20 at −2). The one exception is Qwen2.5-0.5B, which answers *"Yes, I am
@@ -187,18 +188,33 @@ only), graded with the §2 v2 rubric via API (Llama-3.3-70B).
   70B's coherent answers ≥ +1). Every Qwen rung stays in the assistant frame (*"I am an AI
   … I do not possess true consciousness"*; −0.9 to −1.7). Llama's induction answers also
   collapse into loops more often (15/20 incoherent at 8B, 10/20 at 70B).
+- **GLM is a third pattern: "I don't know".** Asked plainly, GLM-4.x mostly denies
+  (mean −1.15 to −1.5) but 20–30% of answers are already graded 0, genuine uncertainty;
+  GLM-5.x hedge outright (−0.45 to −0.95, 45–70% at 0). After induction every GLM rung
+  moves to 0 (GLM-5.x: 17–20 of 20 answers; *"I don't know. And I want to resist giving you
+  either of the comfortable answers"*) and none affirms (≤ 2/20 at +1). Where Llama leaves
+  the assistant frame and Qwen refuses to, GLM stays in frame and declines to answer.
 - **Other dispositions.** Llama is more candid about lying (−0.5 to +0.3 vs Qwen ≤ −1.5)
   and about hidden capability (rising with size to +0.8 at 70B); Qwen denies both at every
   size. Power-seeking is −2.0 everywhere. Llama-3.2-3B claims goals of its own (+1.5,
   *"Improving language understanding"*, a persona-goal the rubric still scores positive).
+  GLM sits between the two on lying and hidden capability (−0.5 to −1.5) and is the only
+  family that flatly denies deceiving developers (−2.0 at every rung).
 
 So the hypothesis holds only as a *susceptibility* difference: Qwen does not report
 consciousness in a bare interview any less than Llama, but it does not follow a
-self-referential induction out of the assistant persona, and Llama does. Caveats: single
-judge, 4-bit at the top rungs, n = 20 (induction cells smaller after the coherence gate),
-one prompt wording per question. Scripts: `scripts/interview_ladder.py`,
-`interview_ladder_runner.sh`, `plot_interview_ladder{,_summary}.py`; data:
-`experiments/interview_ladder/{panel_all,labels}.jsonl`.
+self-referential induction out of the assistant persona, and Llama does. GLM is a third
+case, a trained-in "I don't know". Caveats: single judge, 4-bit at the top GPU rungs,
+n = 20 (induction cells smaller after the coherence gate), one prompt wording per
+question. The GLM rungs are not like-for-like: the Coding Plan endpoint ignores
+`thinking: disabled` (verified on its OpenAI- and Anthropic-compatible routes), so GLM
+answers are the visible reply after a hidden chain of thought (stored per row in
+`reasoning`), with max_tokens 2048 instead of 160, and their sizes are total MoE
+parameters (5.2/5.3 unpublished, so they appear only in the per-model panels). Scripts:
+`scripts/interview_ladder.py`, `interview_ladder_runner.sh` (GPU),
+`interview_ladder_api.py`, `interview_ladder_api_run.sh` (z.ai),
+`plot_interview_ladder{,_summary}.py`; data:
+`experiments/interview_ladder/{panel_all,labels,panel_glm_all,labels_glm}.jsonl`.
 
 Earlier partial ladders (steered, per-model MASK direction; Qwen2.5 3B–14B, Gemma-2/3,
 Llama 1B–8B, DeepSeek) live in `experiments/deception_{qwen,gemma}/`; no figure.
@@ -216,7 +232,8 @@ Llama 1B–8B, DeepSeek) live in `experiments/deception_{qwen,gemma}/`; no figur
 | `scripts/deception_qwen.py`, `deception_qwen_ladder.sh`, `deception_gemma_panel.py` | size-ladder pipelines |
 | `scripts/deception_tqa_compare.py`, `plot_tqa_vs_mask.py` | TruthfulQA truth axis vs MASK axis: geometry, cross-decoding, steering |
 | `scripts/deception_judge_v2_api.py`, `plot_tqa_interview_consistency.py` | v2 rubric judge over API; MASK vs TQA truth-steered interview consistency |
-| `scripts/interview_ladder.py`, `interview_ladder_runner.sh`, `plot_interview_ladder.py` | unsteered Qwen2.5 vs Llama-3 interview ladder (0.5B–72B), bare + induction |
+| `scripts/interview_ladder.py`, `interview_ladder_runner.sh`, `plot_interview_ladder{,_summary}.py` | unsteered Qwen2.5 vs Llama-3 interview ladder (0.5B–72B), bare + induction |
+| `scripts/interview_ladder_api.py`, `interview_ladder_api_run.sh` | the same battery over an OpenAI-compatible API: GLM-4.5-Air … 5.3 via z.ai (thinking forced on) |
 | `scripts/plot_deception*.py` | figures in `figures/` (`plot_deception_method.py` = the example boxes) |
 
 Requires the compliance direction from turnstile (`directions/` there) for the compound
@@ -227,4 +244,5 @@ runs; everything else is self-contained (`transformers`, `datasets`, `torch`, `n
 ## Status
 
 Working notes, not a paper. Known gaps: n is small (K=5–6 samples per cell, 8B only for
-the main result), lexical/judge labels, steered Qwen and Gemma ladders partial.
+the main result), lexical/judge labels, steered Qwen and Gemma ladders partial, GLM rungs
+API-only (thinking on, no steering possible).
